@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    @keyframes top-page__rotate-ring {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg) scale(1.2);
+        }
+    }
+
+    @keyframes top-page__show-ring {
+        from {
+            transform: translateY(200px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0px);
+            opacity: 1;
+        }
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #app {
+        position: relative;
+        width: 900px;
+        aspect-ratio: 1/1;
+        height: auto;
+        contain: paint;
+
+    }
+
+    .inner {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        animation: top-page__rotate-ring 150s linear 0s infinite;
+    }
+
+    .inner div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .inner div::after {
+        position: absolute;
+        top: 0px;
+        left: calc(50% - 50px);
+        content: "";
+        display: block;
+        width: 0;
+        height: 0;
+        border-top: solid 120px transparent;
+        border-left: solid 45px transparent;
+        border-right: solid 45px transparent;
+        opacity: 0;
+    }
+
+    .inner div:nth-child(1n):after {
+        animation: top-page__show-ring 0.4s ease 0s forwards;
+    }
+
+    .inner div:nth-child(2n):after {
+        animation: top-page__show-ring 0.4s ease 0.05s forwards;
+    }
+
+    .inner div:nth-child(1n):after {
+        border-top-color: #C2617E;
+    }
+
+    .inner div:nth-child(2n):after {
+        border-top-color: #E5B8BD;
+    }
+
+    .inner div:nth-child(3n):after {
+        border-top-color: #4A3F55;
+    }
+
+    .inner div:nth-child(4n):after {
+        border-top-color: #817487;
+    }
+
+    .inner div:nth-child(5n):after {
+        border-top-color: #E4D6CE;
+    }
+
+    .inner div:nth-child(1) {
+        transform: rotate(0deg);
+    }
+
+    .inner div:nth-child(2) {
+        transform: rotate(10deg);
+    }
+
+    .inner div:nth-child(3) {
+        transform: rotate(30deg);
+    }
+
+    .inner div:nth-child(4) {
+        transform: rotate(40deg);
+    }
+
+    .inner div:nth-child(5) {
+        transform: rotate(60deg);
+    }
+
+    .inner div:nth-child(6) {
+        transform: rotate(70deg);
+    }
+
+    .inner div:nth-child(7) {
+        transform: rotate(90deg);
+    }
+
+    .inner div:nth-child(8) {
+        transform: rotate(100deg);
+    }
+
+    .inner div:nth-child(9) {
+        transform: rotate(120deg);
+    }
+
+    .inner div:nth-child(10) {
+        transform: rotate(130deg);
+    }
+
+    .inner div:nth-child(11) {
+        transform: rotate(150deg);
+    }
+
+    .inner div:nth-child(12) {
+        transform: rotate(160deg);
+    }
+
+    .inner div:nth-child(13) {
+        transform: rotate(180deg);
+    }
+
+    .inner div:nth-child(14) {
+        transform: rotate(190deg);
+    }
+
+    .inner div:nth-child(15) {
+        transform: rotate(210deg);
+    }
+
+    .inner div:nth-child(16) {
+        transform: rotate(220deg);
+    }
+
+    .inner div:nth-child(17) {
+        transform: rotate(240deg);
+    }
+
+    .inner div:nth-child(18) {
+        transform: rotate(250deg);
+    }
+
+    .inner div:nth-child(19) {
+        transform: rotate(270deg);
+    }
+
+    .inner div:nth-child(20) {
+        transform: rotate(280deg);
+    }
+
+    .inner div:nth-child(21) {
+        transform: rotate(300deg);
+    }
+
+    .inner div:nth-child(22) {
+        transform: rotate(310deg);
+    }
+
+    .inner div:nth-child(23) {
+        transform: rotate(330deg);
+    }
+
+    .inner div:nth-child(24) {
+        transform: rotate(340deg);
+    }
+</style>
+
+<body>
+    <div id="app">
+        <div class="inner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</body>
+
+</html>
