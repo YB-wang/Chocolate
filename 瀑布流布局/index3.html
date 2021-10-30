@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .item {
+            position: absolute;
+            width: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px;
+            box-shadow: 0 0 10px 2px rgba(0, 0, 0, .3);
+            transition: all .3s;
+            will-change: transform;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="item ">1</div>
+        <div class="item ">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+        <div class="item">13</div>
+        <div class="item">14</div>
+        <div class="item">15</div>
+        <div class="item">16</div>
+        <div class="item">17</div>
+        <div class="item">18</div>
+        <div class="item">19</div>
+        <div class="item">20</div>
+    </div>
+    <script>
+        let container = document.querySelector(".container");
+        let items = document.querySelectorAll(".item");
+        let baseWidth = items[0].clientWidth + 20;
+        let nodeLayout = [];
+        //列
+        let column = Math.floor(container.clientWidth / baseWidth);
+        //随机赋予初始高度
+        items.forEach((node, index) => {
+            node.style.height = `${Math.random() * 150 + 150}px`;
+        })
+        reset();
+        function reset() {
+            nodeLayout = [];
+            for (let i = 1; i <= column; i++) {
+                nodeLayout.push([])
+            }
+            items.forEach((node, index) => {
+                node.isNode = true;
+                //每次都把节点插入到高度最小的列
+                getMinColumn(nodeLayout).push(node);
+            });
+            changStyle(nodeLayout)
+        }
+        //获取当前高度最小的列
+        function getMinColumn(Layout) {
+            let index = 0;
+            for (let i = 0; i < Layout.length; i++) {
+                for (let j = 0; j < Layout.length; j++) {
+                    if (getColumnHeight(Layout[index]) > getColumnHeight(Layout[j])) {
+                        index = i;
+                    }
+                }
+            }
+            function getColumnHeight(arr) {
+                let height = 0;
+                if (arr.length) {
+                    arr.forEach(item => {
+                        height += item.clientHeight;
+                    });
+                }
+                return height;
+            }
+            return Layout[index];
+        }
+        //设置Top 和left
+        function changStyle(Layout) {
+            Layout.forEach((colItem, col) => {
+                colItem.forEach((node, row) => {
+                    if (row > 0) {
+                        resetTop(colItem[row - 1], node)
+                    } else {
+                        node.style.top = "20px"
+                    }
+                    node.style.left = `${col * baseWidth + 20}px`;
+                })
+            })
+        }
+        function resetTop(preNode, node) {
+            let str = preNode.style.top;
+            let preTop = str.slice(0, str.length - 2) * 1;
+            node.style.top = `${preTop + preNode.clientHeight + 20}px`;
+        }
+        window.onresize = function () {
+            const newColumn = Math.floor(container.clientWidth / baseWidth);
+            if (newColumn !== column) {
+                column = newColumn;
+                requestAnimationFrame(reset)
+            }
+        };
+    </script>
+</body>
+
+</html>

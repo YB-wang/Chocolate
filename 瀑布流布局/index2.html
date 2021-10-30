@@ -13,7 +13,8 @@
         }
 
         .container {
-            position: relative display: flex;
+            position: relative;
+            display: flex;
             flex-wrap: wrap;
             width: 100%;
             margin: 0 auto;
@@ -22,7 +23,6 @@
         .item {
             position: absolute;
             width: 130px;
-            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,10 +30,6 @@
             box-shadow: 0 0 10px 2px rgba(0, 0, 0, .3);
             transition: all .3s;
             will-change: transform;
-        }
-
-        .item:nth-of-type(odd) {
-            height: 300px;
         }
     </style>
 </head>
@@ -61,31 +57,81 @@
         <div class="item">19</div>
         <div class="item">20</div>
     </div>
-
     <script>
         let container = document.querySelector(".container");
         let items = document.querySelectorAll(".item");
         let baseWidth = items[0].clientWidth + 20;
-
+        let nodeLayout = [];
         //一行可以放多少个
         let column = Math.floor(container.clientWidth / baseWidth);
-        reset()
+        //随机赋予初始高度
+        items.forEach((node, index) => {
+            node.style.height = `${Math.random() * 200 + 100}px`;
+        })
+        reset();
         function reset() {
+            nodeLayout = [];
+            let row = Math.floor(items.length / column);
+            if (row !== 0 && items.length % column !== 0) {
+                row = row + 1
+            }
+            for (let i = 1; i <= row; i++) {
+                nodeLayout.push([])
+            }
             items.forEach((node, index) => {
                 //y轴坐标
                 const y = Math.floor(index / column);
                 //x轴坐标
                 const x = index % column;
-                if (y > 0) {
-                    let str = items[index - column].style.top;
-                    let preTop = str.slice(0, str.length - 2) * 1;
-                    node.style.top = `${preTop + items[index - column].clientHeight + 20}px`;
-                } else {
-                    node.style.top = `20px`;
+                //生成视图对应的实例容器
+                node.x = x;
+                node.y = y;
+                node.isNode = true;
+                nodeLayout[y].push(node);
+            });
+            console.table(nodeLayout);
+            //填充对象 方便后面变换顺序
+            for (let i = 0; i < column; i++) {
+                if (!nodeLayout[row - 1][i]) {
+                    nodeLayout[row - 1][i] = { y: row - 1, x: i }
                 }
-                node.style.left = `${(x) * baseWidth}px`;
+            }
+            //设置top left
+            changStyle(nodeLayout);
+        }
+        function changStyle(Layout) {
+            Layout.forEach(arr => {
+                arr.forEach(node => {
+                    if (node.isNode) {
+                        if (node.y > 0) {
+                            resetTop(getNode(node.x, node.y - 1), node);
+                        } else {
+                            node.style.top = `${20}px`;
+                        }
+                        node.style.left = `${node.x * baseWidth + 20}px`;
+                    }
+                })
 
             })
+        }
+        function getNode(x, y) {
+            if (!nodeLayout[y]) {
+                return "不存在该节点"
+            }
+            if (!nodeLayout[y][x]) {
+                return "不存在该节点"
+            }
+            return nodeLayout[y][x];
+        }
+        function resetTop(preNode, node) {
+            let str = preNode.style.top;
+            let preTop = str.slice(0, str.length - 2) * 1;
+            node.style.top = `${preTop + preNode.clientHeight + 20}px`;
+        }
+        function resetLeft(preNode, node) {
+            let str = preNode.style.left;
+            let preLeft = str.slice(0, str.length - 2) * 1;
+            node.style.left = `${preLeft}px`;
         }
         window.onresize = function () {
             const newColumn = Math.floor(container.clientWidth / baseWidth);

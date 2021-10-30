@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            position: relative display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .item {
+            position: absolute;
+            width: 130px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px;
+            box-shadow: 0 0 10px 2px rgba(0, 0, 0, .3);
+            transition: all .3s;
+            will-change: transform;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="item ">1</div>
+        <div class="item ">2</div>
+        <div class="item">3</div>
+        <div class="item">4</div>
+        <div class="item">5</div>
+        <div class="item">6</div>
+        <div class="item">7</div>
+        <div class="item">8</div>
+        <div class="item">9</div>
+        <div class="item">10</div>
+        <div class="item">11</div>
+        <div class="item">12</div>
+        <div class="item">13</div>
+        <div class="item">14</div>
+        <div class="item">15</div>
+        <div class="item">16</div>
+        <div class="item">17</div>
+        <div class="item">18</div>
+        <div class="item">19</div>
+        <div class="item">20</div>
+    </div>
+
+    <script>
+        let container = document.querySelector(".container");
+        let items = document.querySelectorAll(".item");
+        let baseWidth = items[0].clientWidth + 20;
+
+        //一行可以放多少个
+        let column = Math.floor(container.clientWidth / baseWidth);
+        //随机赋予初始高度
+        items.forEach((node, index) => {
+            node.style.height = `${Math.random() * 200 + 100}px`;
+        })
+        reset();
+        function reset() {
+            items.forEach((node, index) => {
+                //y轴坐标
+                const y = Math.floor(index / column);
+                //x轴坐标
+                const x = index % column;
+                if (y > 0) {
+                    let str = items[index - column].style.top;
+                    let preTop = str.slice(0, str.length - 2) * 1;
+                    node.style.top = `${preTop + items[index - column].clientHeight + 20}px`;
+                } else {
+                    node.style.top = `20px`;
+                }
+                node.style.left = `${(x) * baseWidth}px`;
+
+            })
+        }
+        window.onresize = function () {
+            const newColumn = Math.floor(container.clientWidth / baseWidth);
+            if (newColumn !== column) {
+                column = newColumn;
+                requestAnimationFrame(reset)
+            }
+        };
+    </script>
+</body>
+
+</html>
