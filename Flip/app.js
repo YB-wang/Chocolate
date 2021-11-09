@@ -1,6 +1,6 @@
 
 const container = document.querySelector('.container');
-let arr =Array.from(container.children)
+let arr = Array.from(container.children)
 function change() {
     const childrens = [...arr]
     for (let i = 0, l = childrens.length; i < l; i++) {
