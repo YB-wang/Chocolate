@@ -42,6 +42,51 @@
     return Constructor;
   }
 
+  var uid = 0;
+
+  var Dep = /*#__PURE__*/function () {
+    function Dep() {
+      _classCallCheck(this, Dep);
+
+      this.id = uid++;
+      this.subs = [];
+    }
+
+    _createClass(Dep, [{
+      key: "addSub",
+      value: function addSub(val) {
+        this.subs.push(val);
+      }
+    }, {
+      key: "depend",
+      value: function depend() {
+        if (window.target) {
+          window.target.addDep(this);
+        }
+      }
+    }, {
+      key: "notify",
+      value: function notify() {
+        this.subs.forEach(function (sub) {
+          sub.update();
+        });
+        console.log(this.subs);
+      } //移除watcher的方法
+
+    }, {
+      key: "removeSub",
+      value: function removeSub(sub) {
+        var index = this.subs.indexOf(sub);
+
+        if (index > -1) {
+          return this.subs.splice(index, 1);
+        }
+      }
+    }]);
+
+    return Dep;
+  }();
+
   function isObject(data) {
     if (_typeof(data) !== 'object' || data === null) {
       return false;
@@ -75,6 +120,95 @@
 
       return obj;
     };
+  }
+  function proxy(vm, data, key) {
+    Object.defineProperty(vm, key, {
+      get: function get() {
+        return vm[data][key];
+      },
+      set: function set(newValue) {
+        vm[data][key] = newValue;
+      }
+    });
+  }
+  function defineReactive(data, key, value) {
+    //判断value是否为对象 如果是 则遍历属性劫持子属性 然后对象本身也需要劫持
+    if (isObject(value)) {
+      observe(value);
+    }
+
+    var dep = new Dep();
+    var childOb = observe(value);
+    Object.defineProperty(data, key, {
+      enumerable: true,
+      configurable: true,
+      get: function get() {
+        dep.depend();
+
+        if (childOb) {
+          childOb.dep.depend();
+        }
+
+        return value;
+      },
+      set: function set(newValue) {
+        if (newValue === value) return; //若果设置的新值也是一个对象 也需要进行劫持
+
+        if (isObject(value)) {
+          observe(value);
+        }
+
+        console.log("数据更新了");
+        value = newValue;
+        dep.notify();
+      }
+    });
+  }
+  var seenObjects = new Set();
+  function traverse(val) {
+    _traverse(val, seenObjects);
+
+    seenObjects.clear();
+  }
+
+  function _traverse(val, seen) {
+    var i, keys;
+    var isA = Array.isArray(val);
+
+    if (!isA && !isObject(val) || Object.isFrozen(val)) {
+      return;
+    }
+
+    if (val.__ob__) {
+      var depId = val.__ob__.dep.id;
+
+      if (seen.has(depId)) {
+        return;
+      }
+
+      seen.add(depId);
+    }
+
+    if (isA) {
+      i = val.length;
+
+      while (i--) {
+        _traverse(val[i], seen);
+      }
+    } else {
+      keys = Object.keys(val);
+      i = keys.length;
+
+      while (i--) {
+        _traverse(val[keys[i]], seen);
+      }
+    }
+  } //检查val是否是一个有效的数组索引，其实就是验证是否是一个非无穷大的正整数
+
+
+  function isValidArrayIndex(val) {
+    var n = parseFloat(String(val));
+    return n >= 0 && Math.floor(n) === n && isFinite(val); //Math.floor(n) === n验证是否是整数 
   }
 
   var oldArrayMethods = Array.prototype; //将 arrayMethods 的 __proto__ 指向  Array.prototype
@@ -113,38 +247,6 @@
       return result;
     };
   });
-
-  var Dep = /*#__PURE__*/function () {
-    function Dep() {
-      _classCallCheck(this, Dep);
-
-      this.subs = [];
-    }
-
-    _createClass(Dep, [{
-      key: "addSub",
-      value: function addSub(val) {
-        this.subs.push(val);
-      }
-    }, {
-      key: "depend",
-      value: function depend() {
-        if (window.target) {
-          this.subs.push(window.target);
-        }
-      }
-    }, {
-      key: "notify",
-      value: function notify() {
-        this.subs.forEach(function (sub) {
-          sub.update();
-        });
-        console.log(this.subs);
-      }
-    }]);
-
-    return Dep;
-  }();
 
   function observe(data) {
     if (!isObject(data)) {
@@ -200,46 +302,21 @@
     return Observer;
   }();
 
-  function defineReactive(data, key, value) {
-    //判断value是否为对象 如果是 则遍历属性劫持
-    if (isObject(value)) {
-      observe(value);
-    }
-
-    var dep = new Dep();
-    var childOb = observe(value);
-    Object.defineProperty(data, key, {
-      enumerable: true,
-      configurable: true,
-      get: function get() {
-        dep.depend();
-
-        if (childOb) {
-          childOb.dep.depend();
-        }
-
-        return value;
-      },
-      set: function set(newValue) {
-        if (newValue === value) return; //若果设置的新值也是一个对象 也需要进行劫持
-
-        if (isObject(value)) {
-          observe(value);
-        }
-
-        console.log("数据更新了");
-        value = newValue;
-        dep.notify();
-      }
-    });
-  }
-
   var Watcher = /*#__PURE__*/function () {
     //vm指观测对象  expOrFn 指具体属性 cb为回调函数
-    function Watcher(vm, expOrFn, cb) {
+    function Watcher(vm, expOrFn, cb, op) {
       _classCallCheck(this, Watcher);
 
       this.vm = vm;
+
+      if (op) {
+        this.deep = !!op.deep;
+      } else {
+        this.deep = false;
+      }
+
+      this.deps = [];
+      this.depIds = new Set();
       this.gettter = parsePath(expOrFn);
       this.cb = cb;
       this.value = this.get();
@@ -250,8 +327,25 @@
       value: function get() {
         window.target = this;
         var value = this.gettter.call(this.vm, this.vm);
+
+        if (this.deep) {
+          //deep的处理逻辑
+          traverse(value);
+        }
+
         window.target = undefined;
         return value;
+      }
+    }, {
+      key: "addDep",
+      value: function addDep(dep) {
+        var id = dep.id;
+
+        if (!this.depIds.has(id)) {
+          this.depIds.add(id);
+          this.deps.push(dep);
+          dep.addSub(this);
+        }
       }
     }, {
       key: "update",
@@ -259,6 +353,16 @@
         var oldValue = this.value;
         this.value = this.get();
         this.cb.call(this.vm, this.value, oldValue);
+      } //通知Dep将自己移除
+
+    }, {
+      key: "teardown",
+      value: function teardown() {
+        var i = this.deps.length;
+
+        while (i--) {
+          this.deps[i].removeSub(this);
+        }
       }
     }]);
 
@@ -286,16 +390,51 @@
     var data = vm.$options.data;
     data = typeof data === 'function' ? data.call(vm) : data; //方便用户直接访问data
 
-    vm._data = data; //数据劫持  
+    vm._data = data; //当我区vm上取属性值时，帮我将属性的取值代理到_data上
+
+    for (var key in data) {
+      proxy(vm, '_data', key);
+    } //数据劫持  
+
 
     observe(data);
-    new Watcher(data, 'age', function (v1, v2) {
-      console.log("oldVal:", v2, '=>', "newVal:", v1);
-    });
   }
 
   function compileToFunction(template) {
     return function render() {};
+  }
+
+  function $watch(expOrFn, cb, op) {
+    var vm = this;
+    op = op || {};
+    var watcher = new Watcher(vm, expOrFn, cb, op);
+
+    if (op.immediate) {
+      cb.call(vm, watcher.value);
+    }
+
+    return function unwatchFn() {
+      watcher.teardown();
+    };
+  } //
+
+  function $set(target, key, val) {
+    //如果是数组
+    if (Array.isArray(target) && isValidArrayIndex(key)) {
+      target.length = Math.max(target, length, key);
+      target.splice(key, 1, val);
+      return val;
+    } //如果key已存在
+
+
+    if (key in target && !(key in Object.prototype)) {
+      target[key] = val;
+      return val;
+    } //新增属性
+    //target不能是vue实例或者vue实例的根数据对象
+
+
+    target.__ob__;
   }
 
   function initMixin(Vue) {
@@ -330,6 +469,9 @@
         vm.render = render;
       }
     };
+
+    Vue.prototype.$watch = $watch;
+    Vue.prototype.$set = $set;
   }
 
   function Vue(options) {

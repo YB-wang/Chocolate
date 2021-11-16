@@ -1,6 +1,7 @@
-
+let uid = 0
 export default class Dep {
     constructor() {
+        this.id = uid++
         this.subs = [];
     }
     addSub(val) {
@@ -8,7 +9,7 @@ export default class Dep {
     }
     depend() {
         if (window.target) {
-            this.subs.push(window.target);
+            window.target.addDep(this)
         }
     }
     notify() {
@@ -17,4 +18,12 @@ export default class Dep {
         });
         console.log(this.subs);
     }
+    //移除watcher的方法
+    removeSub(sub) {
+        const index = this.subs.indexOf(sub)
+        if (index > -1) {
+            return this.subs.splice(index, 1)
+        }
+    }
+    
 }

@@ -1,5 +1,6 @@
 import { observe } from "./observe/index.js";
 import Watcher from './observe/watcher.js'
+import { proxy } from './utils/index.js'
 export function initState(vm) {
     const opts = vm.$options;
     //这是vue默认的初始化顺序
@@ -31,11 +32,14 @@ function initData(vm) {
     data = typeof data === 'function' ? data.call(vm) : data;
     //方便用户直接访问data
     vm._data=data;
+
+    //当我区vm上取属性值时，帮我将属性的取值代理到_data上
+    for(let key in data){
+        proxy(vm,'_data',key)
+    }
     //数据劫持  
     observe(data)
-    new Watcher(data,'age',(v1,v2)=>{
-        console.log("oldVal:",v2,'=>',"newVal:",v1);
-    })
+    
 }
 function initComputed(vm) {
 
@@ -43,3 +47,4 @@ function initComputed(vm) {
 function initWatchr(vm) {
 
 }
+

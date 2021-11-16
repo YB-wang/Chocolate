@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
-    "serve":"cross-env ENV=development rollup -c -w"
+    "serve": "cross-env ENV=development rollup -c -w"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +17,8 @@
     "rollup": "^2.59.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-serve": "^1.1.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }

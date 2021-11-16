@@ -1,5 +1,7 @@
 import { initState } from './state.js'
 import { compileToFunction } from './compile/index.js'
+import Watcher from './observe/watcher.js';
+import { $watch,$set } from "./protoMethod/index.js"
 export function initMixin(Vue) {
         Vue.prototype._init = function (options) {
                 //数据劫持
@@ -28,7 +30,10 @@ export function initMixin(Vue) {
                         console.log(template);
                         //拿到模板后 将模板转换为render函数
                         const render = compileToFunction(template);
-                        vm.render=render;
+                        vm.render = render;
                 }
         }
+        Vue.prototype.$watch = $watch
+
+        Vue.prototype.$set = $set
 }
