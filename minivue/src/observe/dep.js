@@ -25,5 +25,5 @@ export default class Dep {
             return this.subs.splice(index, 1)
         }
     }
-    
+
 }

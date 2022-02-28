@@ -1,7 +1,7 @@
 import { initState } from './state.js'
 import { compileToFunction } from './compile/index.js'
 import Watcher from './observe/watcher.js';
-import { $watch,$set } from "./protoMethod/index.js"
+import { $watch, $set } from "./protoMethod/index.js"
 export function initMixin(Vue) {
         Vue.prototype._init = function (options) {
                 //数据劫持
