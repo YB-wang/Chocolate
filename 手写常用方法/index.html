@@ -7,16 +7,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+<style>
+    #app {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+
+    }
+
+    .box1 {
+        width: 100px;
+        height: 100px;
+        background: red;
+        justify-self: flex-start;
+        align-self: flex-start;
+    }
+
+    .box2 {
+        width: 100px;
+        height: 100px;
+        background: red;
+        justify-self: flex-end;
+        align-self: flex-end;
+    }
+</style>
 
 <body>
     <template>
         <h1>我叫{{name}},性别{{sex}},今年{{age}}岁.</h1>
     </template>
+    <div id="app">
+        <div class="box1"></div>
+        <div class="box2"></div>
+    </div>
 
 </body>
 <script type="module" src="./index.js"></script>
 <script>
-    
+    // let _str = "select name,age,sex from xxxx";
+    // let _reg =/(?<=select).*(?=from)/g;
+    // console.log(_str.match(_reg));
 </script>
 
 </html>

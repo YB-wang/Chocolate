@@ -1,5 +1,5 @@
-let wtimer
-wtimer=setInterval(() => {
+let wtimer;
+wtimer = setInterval(() => {
 	console.log(wtimer);
 }, 500);
 class FallLayOut {
@@ -18,7 +18,7 @@ class FallLayOut {
 		this.baseWidth = null;
 		// 当前排列的列数
 		this.column = null;
-		this.init()
+		this.init();
 	}
 	// 初始化
 	init() {
@@ -35,7 +35,9 @@ class FallLayOut {
 			"resize",
 			this.debounce(() => {
 				// 如果行数与页面改变前一样，则不产生变化，
-				const newColumn = Math.floor(this.container.clientWidth / this.baseWidth);
+				const newColumn = Math.floor(
+					this.container.clientWidth / this.baseWidth
+				);
 				if (newColumn !== this.column) {
 					this.column = newColumn;
 					requestAnimationFrame(this.reset.bind(that));
@@ -81,20 +83,25 @@ ${this.containerName}>div {
 		});
 
 		let maxHeight = this.getColumnHeight(squareRect[0]);
-		this.container.style.height = maxHeight + squareRect.length * heightGap + "px";
+		this.container.style.height =
+			maxHeight + squareRect.length * heightGap + "px";
 		// 二次遍历通过元素数组模型排列元素在页面中的位置
 		squareRect.forEach((nodeList, col) => {
 			let compareHeight = this.getColumnHeight(nodeList);
 			if (maxHeight < compareHeight) {
 				maxHeight = compareHeight;
-				this.container.style.height = maxHeight + nodeList.length * heightGap + "px";
+				this.container.style.height =
+					maxHeight + nodeList.length * heightGap + "px";
 			}
 			nodeList.forEach((item, row) => {
 				item.style.left = `${col * this.baseWidth}px`;
 				if (row === 0) {
 					item.style.top = `0px`;
 				} else {
-					item.style.top = `${parseInt(nodeList[row - 1].style.top) + nodeList[row - 1].clientHeight + heightGap}px`;
+					item.style.top = `${parseInt(nodeList[row - 1].style.top) +
+						nodeList[row - 1].clientHeight +
+						heightGap
+						}px`;
 				}
 			});
 		});
@@ -116,7 +123,7 @@ ${this.containerName}>div {
 	getColumnHeight(arr) {
 		let height = 0;
 		if (arr.length > 0) {
-			arr.forEach(item => {
+			arr.forEach((item) => {
 				height += item.clientHeight;
 			});
 		}
@@ -138,7 +145,7 @@ ${this.containerName}>div {
 			if (timer) {
 				clearTimeout(timer);
 			}
-			
+
 			timer = setTimeout(function () {
 				func.apply(context, args);
 			}, delay);
@@ -146,5 +153,5 @@ ${this.containerName}>div {
 	}
 }
 
-const box =new FallLayOut("#app",{ widthGap:20, heightGap:20 });
-box.init()
+const box = new FallLayOut("#app", { widthGap: 20, heightGap: 20 });
+box.init();

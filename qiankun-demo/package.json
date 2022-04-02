@@ -1,0 +1,20 @@
+{
+  "name": "qiankun-demo",
+  "version": "1.0.0",
+  "description": "基于vue2基座 vue3子应用的qiankun demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "npm-run-all install:* ",
+    "install:main": "cd main && npm install ",
+    "install:vue3-demo": "cd vue3-demo && npm install ",
+    "serve": "npm-run-all serve:*",
+    "serve:main": "cd main && npm run serve ",
+    "serve:vue3-demo": "cd vue3-demo && npm run serve  ",
+    "build": "npm-run-all build:* ",
+    "build:main": "cd main && npm run build ",
+    "build:vue3-demo": "cd vue3-demo && npm run build "
+  },
+  "author": "YBW",
+  "license": "ISC"
+}

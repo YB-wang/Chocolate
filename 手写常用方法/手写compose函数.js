@@ -16,6 +16,7 @@ function compose(...fns){
 
 function pipe(...fns){
     return arg =>fns.reduce((prev,fn)=>{
+        console.log(prev)
         return fn(prev)
     },arg)
 }

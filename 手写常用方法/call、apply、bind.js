@@ -7,7 +7,7 @@
 //       当第一个参数是基本类型 ， 内部会调用相应的构造函数 创建对应实例让this指向这个实例
 //       当第一个参数是引用类型 ， 内部this会指向它
 Function.prototype._call = function (ctx, ...args) {
-    
+
     const _ctx = ctx == undefined ? window : Object(ctx)
     //this表示当前_call的调用者  即 那个函数调用就指向谁
     // 将fn的上下文设置成_ctx
