@@ -1,37 +1,22 @@
 <template>
-    <div
-        class="container-layer"
-        :style="{
-            'position': 'absolute',
-            'z-index': '9999',
-            'left': '0px',
-            'top': '0px',
-            'transform-origin': 'center center',
-            'transform': 'rotate(' + this.rotate + 'deg)'
-        }"
-        ref="container"
-        v-drag
-    >
-        <div class="operation-layer">
-            <img
-                :src="url"
-                ref="img"
-                :style="{
-                    'width': `${this.imgW}px`,
-                    'height': `${this.imgH}px`,
-                    'transform-origin': 'center center',
-                    'transform': 'scale(' + this.scale + ')'
-                }"
-                @load="imgLoaded"
-            />
-            <span class="p p1" ref="p1"></span>
-            <span class="p p2" ref="p2"></span>
-        </div>
+    <div>
+        <img
+            :src="url"
+            ref="img"
+            :style="{
+                'position': 'absolute',
+                'z-index': '9999',
+                'left': '0px',
+                'top': '0px',
+                'transform-origin': 'center center',
+                'transform': 'scale(' + this.scale + ') rotate(' + this.rotate + 'deg)'
+            }"
+            @load="imgLoaded"
+        />
     </div>
 </template>
 
 <script>
-
 
 export default {
     props: {
@@ -68,22 +53,29 @@ export default {
                 oDiv.addEventListener('mousedown', (e) => {
                     e.preventDefault()
                     oDiv.canDarg = true
-                    oDiv.disX = e.clientX - oDiv.offsetLeft
-                    oDiv.disY = e.clientY - oDiv.offsetTop
+                    oDiv.disX = e.clientX
+                    oDiv.disY = e.clientY
+                    oDiv.startLeft = oDiv.offsetLeft
+                    oDiv.startTop = oDiv.offsetTop
+
                 })
                 document.addEventListener('mousemove', (e) => {
                     e.preventDefault()
                     if (oDiv.canDarg) {
                         const l = e.clientX - oDiv.disX
                         const t = e.clientY - oDiv.disY
-                        el.style.left = l + 'px'
-                        el.style.top = t + 'px'
+                        el.style.left = oDiv.startLeft + l + 'px'
+                        el.style.top = oDiv.startTop + t + 'px'
+                        oDiv.center.x = oDiv.center.x + l
+                        oDiv.center.y = oDiv.center.y + t
+                        console.log(oDiv.center)
                     }
                 })
                 document.addEventListener('mouseup', (e) => {
                     e.preventDefault()
                     oDiv.canDarg = false
                 })
+
             }
         }
     },
@@ -93,33 +85,26 @@ export default {
             rotate: 0,
             isElLoaded: false,
             isMapLoaded: false,
-            imgW: 0,
-            imgH: 0,
-            center: [0, 0],
-            canDarg: false
+            center: { x: 0, y: 0 }
         }
     },
     methods: {
         //获取p1  p2 相对于el的坐标
         getPoint(el) {
-            let { left, top } = el.getBoundingClientRect()
-            let { left: left2, top: top2 } = el.parentNode.getBoundingClientRect()
-            return {
-                x: left - left2,
-                y: top - top2
-            }
+
         },
         imgLoaded() {
-            this.imgW = this.$refs.img.naturalWidth
-            this.imgH = this.$refs.img.naturalHeight
-            this.center = [this.imgW / 2, this.imgH / 2]
+            const imgW = this.$refs.img.naturalWidth
+            const imgH = this.$refs.img.naturalHeight
+            this.$refs.img.center = {
+                x: imgW / 2,
+                y: imgH / 2
+            }
             console.log('img loaded')
         },
         init() {
             this['c-scale'] ? this.scale = this['c-scale'] : ""
             this['c-rotate'] ? this.rotate = this['c-rotate'] : ""
-            this['c-left'] ? this.left = this['c-left'] : ""
-            this['c-top'] ? this.top = this['c-top'] : ""
         },
         getImgUrl(img) {
             const canvas = document.createElement('canvas')
@@ -131,24 +116,22 @@ export default {
             return url
         },
         addLayer() {
-            const p1 = this.getPoint(this.$refs.p1)
-            const p2 = this.getPoint(this.$refs.p2)
-            const pixel1 = new AMap.Pixel(p1.x, p1.y);
-            const pixel2 = new AMap.Pixel(p2.x, p2.y);
-            const lnglat1 = this.map.containerToLngLat(pixel1)
-            const lnglat2 = this.map.containerToLngLat(pixel2)
-            const bounds = new AMap.Bounds(lnglat1, lnglat2)
-            console.log(pixel1, pixel2)
-            const option = {
-                bounds,
-                url: this.getImgUrl(this.$refs.img), // 图片 Url
-                zIndex: 999,
-                zooms: [1, 20] // 设置可见级别，[最小级别，最大级别]
-            }
-            console.log(option)
-            const imageLayer = new AMap.ImageLayer(option);
-            this.map.add(imageLayer);
-            this.$refs.img.style.display = 'none'
+            // const pixel1 = new AMap.Pixel(p1.x, p1.y);
+            // const pixel2 = new AMap.Pixel(p2.x, p2.y);
+            // const lnglat1 = this.map.containerToLngLat(pixel1)
+            // const lnglat2 = this.map.containerToLngLat(pixel2)
+            // const bounds = new AMap.Bounds(lnglat1, lnglat2)
+            // console.log(pixel1, pixel2)
+            // const option = {
+            //     bounds,
+            //     url: this.getImgUrl(this.$refs.img), // 图片 Url
+            //     zIndex: 999,
+            //     zooms: [1, 20] // 设置可见级别，[最小级别，最大级别]
+            // }
+            // console.log(option)
+            // const imageLayer = new AMap.ImageLayer(option);
+            // this.map.add(imageLayer);
+            // this.$refs.img.style.display = 'none'
         }
     },
     watch: {
