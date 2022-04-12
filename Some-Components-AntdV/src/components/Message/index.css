@@ -1,0 +1,18 @@
+.yb-message-fade-enter-from,
+.yb-message-fade-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -100%);
+}
+.yb-message {
+  padding: 5px 10px;
+  background-color: #fff;
+  position: absolute;
+  z-index: 999;
+  left: 50%;
+  transform: translate(-50%, 0);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+body {
+  position: relative;
+  overflow: hidden;
+}
