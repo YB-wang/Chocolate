@@ -26,5 +26,9 @@ function reverseObject(obj) {
     const vk = kv.map(arr => arr.reverse())
     return Object.fromEntries(vk)
 }
-
-
+const obj = {
+    name: 'wang',
+    age: 18,
+    sex: "male"
+}
+const { name, age, sex } = obj
