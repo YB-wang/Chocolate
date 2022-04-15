@@ -1,28 +1,31 @@
 <template>
   <el-select
-    ref="elSelectRef"
     v-model="proxyValue"
     v-bind="$attrs"
     v-on="$listeners"
+    :filter-method="filterMethod"
   >
-    <template v-for="(item, i) in options">
+    <template v-for="(item, index) in computedData">
       <el-option
-        v-if="isRender(i)"
+        v-if="shouldRender(index)"
         ref="li"
-        :key="item.value + i"
-        :data-content="i"
+        :key="item.value + index"
+        :data-content="index"
         :label="item.label"
         :value="item.value"
+        :style="{
+          position: 'absolute',
+          width: '100%',
+          top: `${itemHeight * index}px`,
+        }"
       />
     </template>
   </el-select>
 </template>
 
 <script>
-const maxNum = 50;
-const itemHeight = 34;
 export default {
-  name: "BaseSelect",
+  name: "VirtualSelect",
   props: {
     options: {
       type: Array,
@@ -36,14 +39,57 @@ export default {
         return [];
       },
     },
+    maxNum: {
+      type: Number,
+      default: () => {
+        return 50;
+      },
+    },
+    itemHeight: {
+      type: Number,
+      default: () => {
+        return 34;
+      },
+    },
+    druation: {
+      type: Number,
+      default: () => {
+        return 5;
+      },
+    },
   },
   data() {
     return {
       currentScrollTop: 0,
-      observer: Object.create(null),
-      startIndex: 0,
-      ul_Element: Object.create(null),
+      container: Object.create(null),
+      scrollTimer: null,
+      filterText: "",
     };
+  },
+  methods: {
+    filterMethod(v) {
+      this.filterText = v;
+      let index = this.computedData.findIndex((item) => item.value.includes(v));
+      this.scrollTo(index);
+    },
+    scrollHandler() {
+      if (this.scrollTimer) clearTimeout(this.scrollTimer);
+      this.scrollTimer = setTimeout(() => {
+        this.currentScrollTop = this.container.scrollTop;
+        clearTimeout(this.scrollTimer);
+      }, this.druation);
+    },
+    scrollTo(index) {
+      if (index === -1) return;
+      if (index < 0) index = 0;
+      const px = index * this.itemHeight;
+      this.container.scrollTop = px;
+      this.currentScrollTop = px;
+    },
+    initSelect() {
+      let index = this.options.findIndex((item) => item.value === this.value);
+      this.scrollTo(index);
+    },
   },
   computed: {
     proxyValue: {
@@ -54,41 +100,39 @@ export default {
         this.$emit("update:value", val);
       },
     },
-    // 判断当前项是否符合插入DOM的条件
-    isRender() {
+    computedData() {
+      return this.options.filter((item) =>
+        item.value.includes(this.filterText)
+      );
+    },
+    startIndex() {
+      const index = Math.floor(
+        Math.floor(this.currentScrollTop / this.itemHeight) / (this.maxNum / 2)
+      );
+      return index * (this.maxNum / 2);
+    },
+    shouldRender() {
       return (i) => i >= this.startIndex && i < this.endIndex;
     },
-    // 通过startIndex + 一屏渲染数计算当前最大显示的index
     endIndex() {
-      return this.startIndex + maxNum;
+      return this.startIndex + this.maxNum;
     },
   },
-  methods: {},
   mounted() {
-    setTimeout(() => {
-      const container = this.$refs.li[0].$el.parentNode.parentNode;
-      const ul = this.$refs.li[0].$el.parentNode;
-      ul.style.height = this.options.length * itemHeight + "px";
-      ul.style["box-sizing"] = "border-box";
-      let cache = 0;
-      container.addEventListener("scroll", (e) => {
-        const scrollTop = container.scrollTop;
-        const range = Math.floor(
-          container.scrollTop / (itemHeight * (maxNum / 2))
-        );
-        //向下滚动
-        if (scrollTop > this.currentScrollTop) {
-          this.currentScrollTop = scrollTop;
-          if (range > cache) {
-            cache += 1;
-            this.startIndex += maxNum / 2;
-            ul.style.paddingTop = this.currentScrollTop + 6 + "px";
-            return;
-          }
-        }
-      });
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.container = this.$refs.li[0].$el.parentNode.parentNode;
+        const ul = this.$refs.li[0].$el.parentNode;
+        ul.style.height = this.options.length * this.itemHeight + "px";
+        ul.style.position = "relative";
+        ul.style["box-sizing"] = "border-box";
+        this.container.addEventListener("scroll", this.scrollHandler);
+        this.initSelect();
+      }, 0);
     });
+  },
+  beforeDestroy() {
+    this.container.removeEventListener("scroll", this.scrollHandler);
   },
 };
 </script>
-<style></style>

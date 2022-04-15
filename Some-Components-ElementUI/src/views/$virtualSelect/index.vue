@@ -1,6 +1,11 @@
 <template>
   <div>
-    <VirtualSelect :options="options" v-model="value"></VirtualSelect>
+    <h1>{{ value }}</h1>
+    <VirtualSelect
+      :options="options"
+      v-model="value"
+      filterable
+    ></VirtualSelect>
   </div>
 </template>
 
@@ -13,7 +18,8 @@ export default {
   data() {
     return {
       options: [],
-      value: "",
+      value: "value500",
+      v2: "",
     };
   },
   methods: {
@@ -24,7 +30,7 @@ export default {
       resolve();
     }).then(() => {
       const data = [];
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 100000; i++) {
         data.push({
           label: "label" + i,
           value: "value" + i,
