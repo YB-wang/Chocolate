@@ -18,7 +18,7 @@ export default {
   data() {
     return {
       options: [],
-      value: "value500",
+      value: "",
       v2: "",
     };
   },
@@ -30,7 +30,7 @@ export default {
       resolve();
     }).then(() => {
       const data = [];
-      for (let i = 0; i < 100000; i++) {
+      for (let i = 0; i < 10000; i++) {
         data.push({
           label: "label" + i,
           value: "value" + i,
