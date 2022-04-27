@@ -11,14 +11,14 @@ import {
 } from '@ant-design/icons';
 
 import AdminRoutes from '@/router/AdminRoutes';
-import { useNavigate } from 'react-router-dom';
 const { Header, Sider, Content } = Layout;
+import useNavgiate2 from '@/Hooks/useNavgiate';
 export default function () {
     const [collapsed, setCollapsed] = useState(false);
     const toggle = () => {
         setCollapsed(!collapsed);
     };
-    const navigate = useNavigate();
+    const navigate = useNavgiate2();
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
