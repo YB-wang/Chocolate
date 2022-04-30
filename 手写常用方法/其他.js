@@ -4,3 +4,8 @@ function test() {
     console.log(name);
     console.log(this.name);
 }
+
+let arr = ['wang', 'zi', 'qiang']
+delete arr.length
+console.log(Object.fromEntries(arr))
+
