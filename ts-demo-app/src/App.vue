@@ -1,8 +1,8 @@
 <template>
-  <ImageSelect></ImageSelect>
+  <ImgToPoint></ImgToPoint>
 </template>
-<script setup>
-import ImageSelect from "./components/ImageSelect.vue";
+<script setup lang="ts">
+import ImgToPoint from "./components/ImgToPoint.vue";
 </script>
 <style>
 * {

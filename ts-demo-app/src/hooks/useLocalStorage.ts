@@ -1,16 +1,16 @@
-import { reactive, computed } from "vue";
-const createReactiveLocalStorage = () => {
+import { reactive, computed, ComputedRef } from "vue";
+const createReactiveLocalStorage = (): object => {
   const _localStorage = reactive({});
-  Object.keys(window.localStorage).forEach((k) => {
+  Object.keys(window.localStorage).forEach((k: string) => {
     _localStorage[k] = JSON.parse(window.localStorage[k]);
   });
   return _localStorage;
 };
 const $localStorage = createReactiveLocalStorage();
-const useLocalStorage = (...rest) => {
-  const key = rest[0];
+const useLocalStorage = (...rest: Array<any>): [ComputedRef<any>, Function] => {
+  const key: string = rest[0];
   const val = rest[1];
-  const setFn = (v) => {
+  const setFn = (v: string) => {
     $localStorage[key] = v;
     localStorage.setItem(key, JSON.stringify(v));
   };

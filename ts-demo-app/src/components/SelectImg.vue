@@ -10,12 +10,12 @@
   </el-upload>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 const emit = defineEmits(["getFileUrl"]);
-const imageUrl = ref("");
-const getFileUrl = (uploadFile) => {
+const imageUrl = ref<string>("");
+const getFileUrl = (uploadFile: { raw: Blob }): void => {
   const url = URL.createObjectURL(uploadFile.raw);
   imageUrl.value = url;
   emit("getFileUrl", url);
